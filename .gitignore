@@ -20,3 +20,6 @@ vite.config.*.timestamp-*
 /.opencode-skills/
 .claude-replay.*
 .tmp-*
+
+# local editor / agent settings
+.claude/

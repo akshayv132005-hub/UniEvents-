@@ -1,4 +1,5 @@
-// Idempotent demo seed. Upserts ONLY the three demo accounts below, by email.
+// Idempotent demo seed. Upserts ONLY the three demo accounts below (by email)
+// and one demo club for the demo club admin.
 // $setOnInsert means an account that already exists is left exactly as it is,
 // so re-running never duplicates or changes anything, and other users are
 // never touched. Usage: npm run seed -w server
@@ -7,6 +8,7 @@ import bcrypt from 'bcryptjs'
 import { connectDB } from '../src/config/db.js'
 import { User } from '../src/models/User.js'
 import { University } from '../src/models/University.js'
+import { Club } from '../src/models/Club.js'
 import mongoose from 'mongoose'
 
 const DEMO = [
@@ -37,5 +39,23 @@ for (const { password, ...account } of DEMO) {
   )
   console.log(`${account.email.padEnd(22)} ${result.upsertedCount ? 'created' : 'already exists, left unchanged'}`)
 }
+
+// Every existing club admin has a row in `clubs`, so the demo one gets one too
+// (upserted by adminUserId, the unique key of that collection).
+const clubAdmin = await User.findOne({ email: 'club@unievent.lk' }).lean()
+const club = await Club.collection.updateOne(
+  { adminUserId: clubAdmin._id },
+  {
+    $setOnInsert: {
+      name: 'Demo Society',
+      universityId: usj._id,
+      adminUserId: clubAdmin._id,
+      contactInfo: 'club@unievent.lk | +94770000002',
+      approvalStatus: 'approved',
+    },
+  },
+  { upsert: true },
+)
+console.log(`${'Demo Society (club)'.padEnd(22)} ${club.upsertedCount ? 'created' : 'already exists, left unchanged'}`)
 
 await mongoose.disconnect()

@@ -545,5 +545,6 @@ main { flex: 1; }
 @media (max-width: 760px) {
   .auth-grid { grid-template-columns: 1fr; }
   .auth-section .auth-story { position: static; }
+  .nav-actions .nav-login { display: inline-flex; padding: 8px 6px; }
   .nav-user span { max-width: 80px; }
 }

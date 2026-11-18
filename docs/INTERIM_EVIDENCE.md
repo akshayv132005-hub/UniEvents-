@@ -4,12 +4,29 @@ A checklist for capturing the evidence for the interim report. Tick each item as
 
 Repository: https://github.com/akshayv132005-hub/UniEvents-
 
-## Before you start
+## How to run
 
-1. `npm install`, create `server/.env` (see `README.md`), then `npm run seed`.
-2. `npm run dev`. Client: http://localhost:5173. API: http://localhost:5000.
-3. Use a normal (not private) browser window at desktop width unless the item says otherwise.
-4. To start logged out, click **Log out** in the header, or clear the site's storage in DevTools.
+1. Install (Node.js 22+): `npm install` in the repository root.
+2. Create `server/.env` (never committed) from `server/.env.example`:
+   ```
+   MONGODB_URI=mongodb+srv://<user>:<password>@<cluster>.mongodb.net/unievent_hub
+   JWT_SECRET=<long random string>
+   CLIENT_URL=http://localhost:5173
+   PORT=5000
+   ```
+3. Seed the demo accounts: `npm run seed` (safe to re-run; existing users are never changed).
+4. Start both apps: `npm run dev`. Client: http://localhost:5173. API: http://localhost:5000 (`/api/health`).
+5. Tests: `npm test` (in-memory database, never Atlas).
+
+Demo accounts:
+
+| Role | Email | Password | Where to sign in |
+| --- | --- | --- | --- |
+| Student | `student@unievent.lk` | `Student@123` | Student tab |
+| Club Admin (approved) | `club@unievent.lk` | `Club@1234` | Club Admin tab |
+| Super Admin | `admin@unievent.lk` | `Admin@1234` | "Platform admin? Sign in here" |
+
+Tips: use a normal browser window at desktop width unless an item says otherwise. To start logged out, click **Log out** in the header.
 
 ## 1. GitHub repository
 
@@ -48,7 +65,7 @@ Screenshot these ranges in VS Code (or on GitHub, which shows line numbers). Lin
 | 4d | Login with field errors | Student tab, click **Log in** with empty fields |
 | 4e | Login with a server error | Student tab, `student@unievent.lk` and a wrong password, click **Log in** ("Incorrect email or password") |
 | 4f | Wrong portal | Club Admin tab, `student@unievent.lk` / `Student@123` ("This is a student account. Use the Student tab.") |
-| 4g | Pending approval | Register a club admin (4j), then log in with it on the Club Admin tab ("Your account is waiting for Super Admin approval.") |
+| 4g | Pending approval | After submitting a new club admin (4m), log in with it on the Club Admin tab ("Your account is waiting for Super Admin approval.") |
 | 4h | Register, Student | http://localhost:5173/#/signup |
 | 4i | Strength meter | On 4h, type a password such as `Campus2026!` so the meter and the ticks show |
 | 4j | Register, Club Admin | http://localhost:5173/#/signup?role=club_admin (or the **Club Admin** tab), showing the approval note |

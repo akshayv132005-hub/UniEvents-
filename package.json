@@ -1,0 +1,17 @@
+{
+  "name": "unievent-hub",
+  "private": true,
+  "version": "0.1.0",
+  "description": "UniEvent Hub: university event ticketing platform (Group 2, CCS|CSE 2994)",
+  "type": "module",
+  "workspaces": [
+    "client"
+  ],
+  "scripts": {
+    "dev": "npm run dev -w client",
+    "build": "npm run build -w client"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.0"
+  }
+}

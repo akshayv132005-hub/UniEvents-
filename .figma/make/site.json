@@ -1,0 +1,10 @@
+{
+  "description": "Helps Sri Lankan university students discover and book campus events, while student clubs create events, manage registrations, and track attendance.",
+  "robots": {
+    "index": false
+  },
+  "accessibility": {
+    "addBypassLinks": false,
+    "ignoreReducedMotion": false
+  }
+}

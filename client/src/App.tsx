@@ -1,4 +1,13 @@
-import { FormEvent, ReactNode, useEffect, useMemo, useState } from "react"
+import { ReactNode, createContext, useContext, useEffect, useMemo, useState } from "react"
+import Login from "./Login"
+import Register from "./Register"
+import { HOME_FOR_ROLE, Session, api, clearSession, loadSession, saveSession } from "./api"
+
+// Minimal logged-in state shared with the header and dashboards.
+const AuthContext = createContext<{ session: Session | null; logout: () => void }>({
+  session: null,
+  logout: () => {},
+})
 
 type Route = "home" | "explore" | "categories" | "about" | "event" | "booking" | "login" | "signup" | "student" | "ticket" | "club" | "editor" | "super" | "profile"
 
@@ -277,6 +286,7 @@ function Header({
   navigate: (route: Route) => void
 }) {
   const [open, setOpen] = useState(false)
+  const { session, logout } = useContext(AuthContext)
   const links: [string, Route][] = [
     ["Home", "home"],
     ["Explore Events", "explore"],
@@ -317,9 +327,18 @@ function Header({
           </button>
         </nav>
         <div className="nav-actions">
-          <button className="nav-login" onClick={() => navigate("login")}>
-            {route === "login" ? "Student Login" : "Log in"}
-          </button>
+          {session ? (
+            <div className="nav-user">
+              <span title={session.user.email}>Hi, {session.user.name.split(" ")[0]}</span>
+              <button className="nav-logout" onClick={logout}>
+                Log out
+              </button>
+            </div>
+          ) : (
+            <button className="nav-login" onClick={() => navigate("login")}>
+              Log in
+            </button>
+          )}
           <button
             className="notification"
             onClick={() => navigate("student")}
@@ -839,153 +858,6 @@ function About({ navigate }: { navigate: (route: Route) => void }) {
   )
 }
 
-function AuthPage({
-  mode,
-  navigate,
-}: {
-  mode: "login" | "signup"
-  navigate: (route: Route) => void
-}) {
-  const [showPassword, setShowPassword] = useState(false)
-  const [error, setError] = useState("")
-  const submit = (e: FormEvent) => {
-    e.preventDefault()
-    const form = e.currentTarget as HTMLFormElement
-    if (!form.checkValidity()) {
-      setError("Please complete all required fields correctly.")
-      return
-    }
-    setError("")
-    navigate(mode === "login" ? "student" : "login")
-  }
-  return (
-    <Page route={mode} navigate={navigate}>
-      <section className="auth-section">
-        <div className="shell auth-layout">
-          <div className="auth-story">
-            <img
-              src={photos.students}
-              alt="University friends together on campus"
-            />
-            <h1>
-              {mode === "login"
-                ? "A campus connection starts here."
-                : "Your campus story starts here."}
-            </h1>
-            <p>
-              {mode === "login"
-                ? "Your campus. Your events. One student account for discovery, bookings and the moments that matter."
-                : "Join students across Sri Lanka discovering experiences, communities and new possibilities."}
-            </p>
-            <span>Student access</span>
-          </div>
-          <form className="form-card" onSubmit={submit} noValidate>
-            <div className="form-intro">
-              <h2>
-                {mode === "login"
-                  ? "Welcome back"
-                  : "Create your student account"}
-              </h2>
-              <p>
-                {mode === "login"
-                  ? "Log in to book events and manage your tickets."
-                  : "A simple account for campus events, tickets and bookings."}
-              </p>
-            </div>
-            {mode === "signup" && (
-              <>
-                <Field
-                  label="Full name"
-                  placeholder="e.g. Nethmi Silva"
-                  required
-                />
-                <Field
-                  label="Student ID"
-                  placeholder="e.g. 2023/ICT/104"
-                  required
-                />
-              </>
-            )}
-            <Field
-              label="University email"
-              type="email"
-              placeholder="name@university.lk"
-              hint={
-                mode === "signup"
-                  ? "Use your official student email"
-                  : undefined
-              }
-              required
-            />
-            <label className="field">
-              <span>Password</span>
-              <div className="password-field">
-                <input
-                  name="password"
-                  type={showPassword ? "text" : "password"}
-                  placeholder="At least 8 characters"
-                  minLength={8}
-                  required
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  aria-label="Show or hide password"
-                >
-                  <Icon name="eye" size={16} />
-                </button>
-              </div>
-            </label>
-            {mode === "signup" && (
-              <Field
-                label="Confirm password"
-                type={showPassword ? "text" : "password"}
-                placeholder="Repeat your password"
-                required
-              />
-            )}
-            {mode === "login" && (
-              <div className="form-options">
-                <label>
-                  <input type="checkbox" /> Remember me on this device
-                </label>
-                <button type="button">Forgot password?</button>
-              </div>
-            )}
-            {error && <p className="form-error">{error}</p>}
-            <Button type="submit" full>
-              {mode === "login" ? "Log in" : "Create account"}
-            </Button>
-            <p className="form-switch">
-              {mode === "login" ? "New here?" : "Already have an account?"}{" "}
-              <button
-                type="button"
-                onClick={() => navigate(mode === "login" ? "signup" : "login")}
-              >
-                {mode === "login" ? "Create a student account" : "Log in"}
-              </button>
-            </p>
-            <div className="organizer">
-              <strong>
-                {mode === "login"
-                  ? "Organizing an event?"
-                  : "Student club administrator?"}
-              </strong>
-              <p>
-                Club Admin / Organizer accounts are separate and require
-                platform approval.
-              </p>
-              <Button variant="secondary" full onClick={() => navigate("club")}>
-                Organizer access
-              </Button>
-            </div>
-          </form>
-        </div>
-      </section>
-    </Page>
-  )
-}
-
 function Field({
   label,
   placeholder,
@@ -1297,6 +1169,7 @@ function DashboardLayout({
   navigate: (route: Route) => void
   children: ReactNode
 }) {
+  const { logout } = useContext(AuthContext)
   const names = {
     student: "Student portal",
     club: "Club workspace",
@@ -1351,7 +1224,7 @@ function DashboardLayout({
             </button>
           ))}
         </nav>
-        <Button variant="ghost" icon="logout" onClick={() => navigate("home")}>
+        <Button variant="ghost" icon="logout" onClick={logout}>
           Log out
         </Button>
       </aside>
@@ -2090,7 +1963,7 @@ function SuperDashboard({ navigate }: { navigate: (route: Route) => void }) {
 
 export default function App() {
   const getRoute = (): Route => {
-    const value = window.location.hash.replace("#/", "") as Route
+    const value = window.location.hash.replace("#/", "").split("?")[0] as Route
     return [
       "home",
       "explore",
@@ -2123,6 +1996,30 @@ export default function App() {
     if (window.location.hash === `#/${next}`) window.scrollTo(0, 0)
     else window.location.hash = `/${next}`
   }
+
+  const [session, setSession] = useState<Session | null>(loadSession)
+  const handleLogin = (next: Session, remember: boolean) => {
+    saveSession(next, remember)
+    setSession(next)
+    navigate(HOME_FOR_ROLE[next.user.role]) // student -> student, club_admin -> club, super_admin -> super
+  }
+  const logout = () => {
+    clearSession()
+    setSession(null)
+    navigate("home")
+  }
+  // On load, check the stored token is still valid (it expires after 1 day).
+  useEffect(() => {
+    if (!session) return
+    api.me(session.token).catch((err) => {
+      if (err.status === 401) {
+        clearSession()
+        setSession(null)
+      }
+    })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
   const pages: Record<Route, ReactNode> = {
     home: <Home navigate={navigate} />,
     explore: <Explore navigate={navigate} />,
@@ -2130,8 +2027,16 @@ export default function App() {
     about: <About navigate={navigate} />,
     event: <EventDetails navigate={navigate} />,
     booking: <Booking navigate={navigate} />,
-    login: <AuthPage mode="login" navigate={navigate} />,
-    signup: <AuthPage mode="signup" navigate={navigate} />,
+    login: (
+      <Page route="login" navigate={navigate}>
+        <Login navigate={navigate} onLogin={handleLogin} />
+      </Page>
+    ),
+    signup: (
+      <Page route="signup" navigate={navigate}>
+        <Register navigate={navigate} />
+      </Page>
+    ),
     student: <StudentDashboard navigate={navigate} />,
     ticket: <TicketPage navigate={navigate} />,
     club: <ClubDashboard navigate={navigate} />,
@@ -2139,5 +2044,5 @@ export default function App() {
     super: <SuperDashboard navigate={navigate} />,
     profile: <Profile navigate={navigate} />,
   }
-  return pages[route]
+  return <AuthContext.Provider value={{ session, logout }}>{pages[route]}</AuthContext.Provider>
 }

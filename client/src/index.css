@@ -486,6 +486,7 @@ main { flex: 1; }
 .auth-story .auth-photo img { border-radius: 0; }
 
 .auth-form { gap: 16px; align-self: start; }
+.auth-section .auth-story { align-self: start; position: sticky; top: 96px; }
 .auth-form .field { font-size: 13px; }
 .auth-form .field small { font-size: 12px; }
 .auth-form .field input[aria-invalid="true"], .auth-form .field select[aria-invalid="true"] { border-color: var(--red); }
@@ -537,9 +538,12 @@ main { flex: 1; }
 .auth-success p { color: var(--muted); font-size: 14px; line-height: 1.6; margin: 0; max-width: 340px; }
 
 .nav-user { display: flex; align-items: center; gap: 4px; font-size: 13px; font-weight: 700; color: var(--ink); }
+.nav-logout { border: 1px solid #ccd8ef; background: white; color: var(--blue); border-radius: 6px; padding: 7px 12px; font-size: 13px; font-weight: 700; }
+.nav-logout:hover { background: var(--pale); }
 .nav-user span { white-space: nowrap; max-width: 120px; overflow: hidden; text-overflow: ellipsis; }
 
 @media (max-width: 760px) {
   .auth-grid { grid-template-columns: 1fr; }
+  .auth-section .auth-story { position: static; }
   .nav-user span { max-width: 80px; }
 }

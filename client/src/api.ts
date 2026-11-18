@@ -52,7 +52,9 @@ async function request<T>(path: string, init: RequestInit = {}, token?: string):
   }
   const body = await res.json().catch(() => ({}))
   if (!res.ok) {
-    throw new ApiError(res.status, body.code || 'ERROR', body.message || 'Something went wrong', body.details)
+    // No JSON body usually means the dev proxy could not reach the API.
+    if (!body.message) throw new ApiError(res.status, 'NETWORK', 'Cannot reach the server. Check that the API is running.')
+    throw new ApiError(res.status, body.code || 'ERROR', body.message, body.details)
   }
   return body as T
 }

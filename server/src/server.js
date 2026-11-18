@@ -1,6 +1,9 @@
-import 'dotenv/config'
+import dotenv from 'dotenv'
 import { createApp } from './app.js'
 import { connectDB } from './config/db.js'
+
+// server/.env wins over variables inherited from the shell (e.g. a stray PORT).
+dotenv.config({ override: true, quiet: true })
 
 const port = Number(process.env.PORT) || 5000
 

@@ -11,6 +11,8 @@
   --color-pale: #f5f8fd;
   --color-line: #e3e9f2;
   --color-navy: #10294d;
+  --color-violet: #7c5cf0;
+  --color-pink: #d45bc3;
 }
 
 @layer base {
@@ -32,6 +34,10 @@
   --pale: #f5f8fd;
   --line: #e3e9f2;
   --navy: #10294d;
+  /* light accent, used sparingly: logo mark, story overlay, role switch, strength meter */
+  --violet: #7c5cf0;
+  --pink: #d45bc3;
+  --accent-gradient: linear-gradient(120deg, #2f61d6, #7c5cf0 60%, #d45bc3);
   --green: #16845b;
   --red: #c53f4f;
   --shadow: 0 8px 24px rgba(18, 35, 63, .07);
@@ -467,4 +473,73 @@ main { flex: 1; }
   .dash-title h1 { font-size: 26px; }
   .ticket-data { grid-template-columns: 1fr; }
   .profile-upload { flex-direction: column; align-items: flex-start; }
+}
+
+/* ------------------------------------------------------------------ */
+/* Auth: Login and Register (client/src/Login.tsx, Register.tsx)       */
+/* ------------------------------------------------------------------ */
+.logo span { width: 26px; height: 26px; border-radius: 7px; background: var(--accent-gradient); color: white; }
+.site-header button:focus-visible, .auth-form :is(button, input, select, a):focus-visible, .auth-form summary:focus-visible { outline: 3px solid rgba(47,97,214,.45); outline-offset: 2px; }
+
+.auth-photo { position: relative; border-radius: var(--radius); overflow: hidden; }
+.auth-photo::after { content: ""; position: absolute; inset: 0; background: var(--accent-gradient); opacity: .22; mix-blend-mode: multiply; pointer-events: none; }
+.auth-story .auth-photo img { border-radius: 0; }
+
+.auth-form { gap: 16px; align-self: start; }
+.auth-form .field { font-size: 13px; }
+.auth-form .field small { font-size: 12px; }
+.auth-form .field input[aria-invalid="true"], .auth-form .field select[aria-invalid="true"] { border-color: var(--red); }
+.auth-form .form-intro p, .auth-form .form-switch, .auth-form .form-options { font-size: 13px; }
+.auth-form .organizer strong { font-size: 13px; }
+.auth-form .organizer p { font-size: 12px; margin: 6px 0 0; }
+.auth-form .form-options button, .auth-form .form-switch button { font-size: 13px; }
+.auth-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+.role-switch { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 4px; background: var(--pale); border: 1px solid var(--line); border-radius: 9px; }
+.role-switch button { position: relative; border: 0; background: transparent; color: var(--muted); border-radius: 6px; min-height: 38px; font-size: 13px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
+.role-switch button[aria-pressed="true"] { background: white; color: var(--ink); box-shadow: 0 2px 8px rgba(18,35,63,.08); }
+.role-switch button[aria-pressed="true"]::after { content: ""; position: absolute; left: 18%; right: 18%; bottom: 3px; height: 3px; border-radius: 3px; background: var(--accent-gradient); }
+.admin-badge { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 10px 12px; border-radius: 9px; background: var(--navy); color: white; font-size: 13px; font-weight: 700; }
+.admin-badge button { border: 0; background: transparent; color: #c9d6f2; font-size: 12px; font-weight: 700; text-decoration: underline; }
+
+.field-error { display: flex; align-items: flex-start; gap: 6px; color: var(--red); font-size: 12px; font-weight: 600; }
+.field-error svg, .form-error svg, .form-note svg { flex: none; margin-top: 1px; }
+.auth-form .form-error { display: flex; gap: 8px; align-items: flex-start; font-size: 13px; padding: 10px 12px; line-height: 1.45; border: 1px solid #f4d2d7; }
+.form-note { display: flex; gap: 8px; align-items: flex-start; margin: 0; padding: 10px 12px; border-radius: 6px; background: #eef3ff; color: var(--blue-dark); font-size: 13px; line-height: 1.45; }
+.check-field { display: flex; align-items: flex-start; gap: 8px; font-size: 13px; color: var(--ink); line-height: 1.4; }
+.check-field input { width: 16px; height: 16px; margin: 2px 0 0; accent-color: var(--blue); }
+.link-button { border: 0; background: transparent; color: var(--blue); padding: 0; font-weight: 700; font-size: 13px; }
+.admin-link { text-align: center; margin: -4px 0 0; font-size: 12px; color: var(--muted); }
+
+.strength { display: grid; gap: 6px; }
+.strength-track { height: 6px; border-radius: 6px; background: var(--line); overflow: hidden; }
+.strength-fill { height: 100%; border-radius: 6px; background: var(--accent-gradient); background-size: 300px 100%; transition: width .25s ease; }
+.strength-rules { display: flex; flex-wrap: wrap; gap: 4px 12px; margin: 0; padding: 0; list-style: none; font-size: 12px; color: var(--muted); font-weight: 500; }
+.strength-rules li { display: inline-flex; align-items: center; gap: 4px; }
+.strength-rules li.ok { color: var(--green); }
+.strength-label { font-size: 12px; font-weight: 700; color: var(--muted); }
+
+.btn:disabled { opacity: .75; cursor: progress; transform: none; box-shadow: none; }
+.spinner { width: 15px; height: 15px; border-radius: 50%; border: 2px solid rgba(255,255,255,.45); border-top-color: white; animation: spin .7s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .spinner { animation-duration: 2s; } .strength-fill { transition: none; } }
+
+.demo-box { border: 1px dashed #c9d5ea; border-radius: 8px; padding: 10px 12px; font-size: 12px; color: var(--muted); }
+.demo-box summary { cursor: pointer; font-weight: 700; color: var(--ink); font-size: 12px; }
+.demo-box div { display: grid; gap: 6px; margin-top: 10px; }
+.demo-box button { border: 1px solid var(--line); background: var(--pale); border-radius: 6px; padding: 7px 10px; text-align: left; font-size: 12px; color: var(--ink); }
+.demo-box button strong { margin-right: 6px; }
+
+.auth-success { text-align: center; justify-items: center; padding: 40px 30px; }
+.auth-success .success-icon { width: 56px; height: 56px; border-radius: 50%; display: grid; place-items: center; color: white; background: var(--accent-gradient); }
+.auth-success .success-icon.pending { background: var(--navy); }
+.auth-success h2 { font-size: 24px; margin: 0; }
+.auth-success p { color: var(--muted); font-size: 14px; line-height: 1.6; margin: 0; max-width: 340px; }
+
+.nav-user { display: flex; align-items: center; gap: 4px; font-size: 13px; font-weight: 700; color: var(--ink); }
+.nav-user span { white-space: nowrap; max-width: 120px; overflow: hidden; text-overflow: ellipsis; }
+
+@media (max-width: 760px) {
+  .auth-grid { grid-template-columns: 1fr; }
+  .nav-user span { max-width: 80px; }
 }

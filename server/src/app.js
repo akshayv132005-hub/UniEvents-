@@ -3,6 +3,7 @@ import helmet from 'helmet'
 import cors from 'cors'
 import rateLimit from 'express-rate-limit'
 import authRoutes from './routes/auth.js'
+import universityRoutes from './routes/universities.js'
 import { notFound, errorHandler } from './middleware/error.js'
 
 export function createApp({ authLimit = 20 } = {}) {
@@ -22,6 +23,7 @@ export function createApp({ authLimit = 20 } = {}) {
   })
 
   app.get('/api/health', (req, res) => res.json({ ok: true }))
+  app.use('/api/universities', universityRoutes)
   app.use('/api/auth', authLimiter, authRoutes)
 
   app.use(notFound)
